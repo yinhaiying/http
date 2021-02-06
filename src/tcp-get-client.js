@@ -80,6 +80,18 @@ class XMLHttpRequest{
       console.log("request:",request);
       this.socket.write(request);
     }
+    // 获取所有的response header值
+    getAllResponseHeaders(){
+        let result = "";
+        for(let key in this.reaponseHeaders){
+            result += `${key}:${this.reaponseHeaders[key]}`; 
+        };
+        return result;
+    }
+    // 获取reaponse header的某一个值
+    getResponseHeader(key){
+        return this.reaponseHeaders[key]
+    }
 }
 
 
