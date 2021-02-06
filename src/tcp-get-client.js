@@ -57,13 +57,25 @@ class XMLHttpRequest{
              return memo;
             },{});
             console.log("responseHeaders:",this.reaponseHeaders);
+            // send() 方法已经被调用，并且头部和状态已经可获得。已经能够获取到响应头和响应状态。
+            this.readyState = ReadyState.HEADERS_RECEIVED;
+
+
+
             // 处理响应体： 响应体由三部分组成：响应长度，响应内容，和响应结束标志
             let [, body, ] = bodyRows.split("\r\n");
+            // 下载中； responseText 属性已经包含部分数据。已经能够获取到响应体。
+            this.readyState = ReadyState.HEADERS_RECEIVED;
             this.response = this.responseText = body;
+            // 下载操作已完成。
+            this.readyState = ReadyState.DONE;
             // 处理完毕就可以调用onload了。
             this.onload && this.onload();
           })
         });
+        
+        // open方法被调用，readyState状态被改变。
+        this.readyState = ReadyState.OPENED;
     }
     setRequestHeader(header,value){
       this.headers[header] = value;
