@@ -45,7 +45,18 @@ class XMLHttpRequest{
           socket.on("data",(data) => {
             data = data.toString();
             console.log("data",data);
-
+            let [response,bodyRows] = data.split("\r\n\r\n");
+            // 处理响应
+            let [statusLine,...headerRows] = response.split("\r\n");   // 第一个是状态行，第二个是响应头部分。
+            let [,status,statusText] = statusLine.split(" ");
+            this.status = status;
+            this.statusText = statusText;
+            this.reaponseHeaders = headerRows.reduce((memo,row) => {
+             let [key,value] = row.split(": ");
+             memo[key] = value;
+             return memo;
+            },{});
+            console.log("responseHeaders:",this.reaponseHeaders);
           })
         });
     }
