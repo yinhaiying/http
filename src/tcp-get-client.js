@@ -1,8 +1,6 @@
 
 /* 
-通过tcp传输层协议中的net来代替浏览器发送http请求。
-
-
+通过tcp传输层协议中的net来实现浏览器的XMLHttpRequest。代替浏览器发送请求。
 */
 
 const net = require("net");   // tcp传输层协议
@@ -57,7 +55,7 @@ class XMLHttpRequest{
              memo[key] = value;
              return memo;
             },{});
-            console.log("responseHeaders:",this.reaponseHeaders);
+            // console.log("responseHeaders:",this.reaponseHeaders);
             // send() 方法已经被调用，并且头部和状态已经可获得。已经能够获取到响应头和响应状态。
             this.readyState = ReadyState.HEADERS_RECEIVED;
             this.onReadyStateChange && this.onReadyStateChange();
@@ -80,7 +78,6 @@ class XMLHttpRequest{
         
         // open方法被调用，readyState状态被改变。
         this.readyState = ReadyState.OPENED;
-        console.log("这里执行了吗？",this.readyState)
         this.onReadyStateChange && this.onReadyStateChange();
     }
     setRequestHeader(header,value){
@@ -94,7 +91,7 @@ class XMLHttpRequest{
           return `${key}: ${this.headers[key]}`;
       }));
       let request = rows.join("\r\n")+"\r\n\r\n";
-      console.log("request:",request);
+    //   console.log("request:",request);
       this.socket.write(request);
     }
     // 获取所有的response header值
@@ -156,10 +153,10 @@ xhr.responseType = "text";
 xhr.setRequestHeader("name", "hi");
 xhr.setRequestHeader("age", 11);
 xhr.onload = function () {
-    console.log("status", xhr.status);
-    console.log("statusText", xhr.statusText);
-    console.log("response-header", xhr.getAllResponseHeaders());
-    console.log("response-body", xhr.response);
+    // console.log("status", xhr.status);
+    // console.log("statusText", xhr.statusText);
+    // console.log("response-header", xhr.getAllResponseHeaders());
+    // console.log("response-body", xhr.response);
 }
 
 xhr.send();
