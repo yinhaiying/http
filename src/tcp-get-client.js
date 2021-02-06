@@ -57,6 +57,11 @@ class XMLHttpRequest{
              return memo;
             },{});
             console.log("responseHeaders:",this.reaponseHeaders);
+            // 处理响应体： 响应体由三部分组成：响应长度，响应内容，和响应结束标志
+            let [, body, ] = bodyRows.split("\r\n");
+            this.response = this.responseText = body;
+            // 处理完毕就可以调用onload了。
+            this.onload && this.onload();
           })
         });
     }
