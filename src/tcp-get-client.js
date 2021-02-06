@@ -20,6 +20,7 @@ const ReadyState = {
 class XMLHttpRequest{
     constructor(){
         this.readyState = ReadyState.UNSENT;   // 默认是初始化的，未调用open方法。
+        this.onReadyStateChange && this.onReadyStateChange();
         this.headers = {
             "Connection":"keep-alive"
         };   // 请求头，用于设置。
@@ -59,16 +60,19 @@ class XMLHttpRequest{
             console.log("responseHeaders:",this.reaponseHeaders);
             // send() 方法已经被调用，并且头部和状态已经可获得。已经能够获取到响应头和响应状态。
             this.readyState = ReadyState.HEADERS_RECEIVED;
+            this.onReadyStateChange && this.onReadyStateChange();
 
 
 
             // 处理响应体： 响应体由三部分组成：响应长度，响应内容，和响应结束标志
             let [, body, ] = bodyRows.split("\r\n");
             // 下载中； responseText 属性已经包含部分数据。已经能够获取到响应体。
-            this.readyState = ReadyState.HEADERS_RECEIVED;
+            this.readyState = ReadyState.LOADING;
+            this.onReadyStateChange && this.onReadyStateChange();
             this.response = this.responseText = body;
             // 下载操作已完成。
             this.readyState = ReadyState.DONE;
+            this.onReadyStateChange && this.onReadyStateChange();
             // 处理完毕就可以调用onload了。
             this.onload && this.onload();
           })
@@ -76,13 +80,14 @@ class XMLHttpRequest{
         
         // open方法被调用，readyState状态被改变。
         this.readyState = ReadyState.OPENED;
+        console.log("这里执行了吗？",this.readyState)
+        this.onReadyStateChange && this.onReadyStateChange();
     }
     setRequestHeader(header,value){
       this.headers[header] = value;
     }
     send(){
       // send方法是需要把request header中的内容发送出去。
-    //   debugger
       let rows = [];
       rows.push(`${this.method} ${this.url} HTTP/1.1`);
       rows.push(...Object.keys(this.headers).map((key) => {
@@ -104,6 +109,9 @@ class XMLHttpRequest{
     getResponseHeader(key){
         return this.reaponseHeaders[key]
     }
+    // onReadyStateChange(){
+    //   console.log("查看readyState111:", this.readyState);
+    // }
 }
 
 
@@ -141,15 +149,13 @@ hello
 let xhr = new XMLHttpRequest();
 xhr.open("GET", "http://127.0.0.1:8080/get?id=1&name=2");
 xhr.onReadyStateChange = () => {
-    console.log("onReadyStateChange", xhr.readyState)
-
+    console.log("onReadyStateChange11111", xhr.readyState)
 };
 
 xhr.responseType = "text";
 xhr.setRequestHeader("name", "hi");
 xhr.setRequestHeader("age", 11);
 xhr.onload = function () {
-    console.log("onReadyStateChange", xhr.readyState)
     console.log("status", xhr.status);
     console.log("statusText", xhr.statusText);
     console.log("response-header", xhr.getAllResponseHeaders());
