@@ -10,11 +10,11 @@
 <body>
   发送一个post请求
   <script>
+    console.log("这里执行了吗？")
     let xhr = new XMLHttpRequest();
-    xhr.open("POST", "http://127.0.0.1:8080/post");
+    xhr.open("POST", "http://127.0.0.1:8081/post");
     xhr.onReadyStateChange = () => {
       console.log("onReadyStateChange", xhr.readyState)
-
     };
 
     xhr.responseType = "text";
@@ -26,8 +26,7 @@
       console.log("response-header", xhr.getAllResponseHeaders());
       console.log("response-body", xhr.response);
     }
-
-    xhr.send(JSON.stringify({ name: "hello" }));   // 发送请求体：json格式的字符串
+    xhr.send(JSON.stringify({ name: "post请求" }));   // 发送请求体：json格式的字符串
   </script>
 </body>
 
