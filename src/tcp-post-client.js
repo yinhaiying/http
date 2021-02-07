@@ -1,6 +1,6 @@
 
 /* 
-通过tcp传输层协议中的net来实现浏览器的XMLHttpRequest。代替浏览器发送GET请求。
+通过tcp传输层协议中的net来实现浏览器的XMLHttpRequest。代替浏览器发送POST请求。
 */
 
 const net = require("net");   // tcp传输层协议
@@ -83,14 +83,17 @@ class XMLHttpRequest{
     setRequestHeader(header,value){
       this.headers[header] = value;
     }
-    send(){
+    send(body){
       // send方法是需要把request header中的内容发送出去。
       let rows = [];
       rows.push(`${this.method} ${this.url} HTTP/1.1`);
+      // 相比于GET请求，请求头多了跟请求体相关的内容，比如Content-Type、Content-Length
+      this.headers["Content-Length"] = Buffer.byteLength(body);
+      this.headers["Content-Type"] = "application/json"
       rows.push(...Object.keys(this.headers).map((key) => {
           return `${key}: ${this.headers[key]}`;
       }));
-      let request = rows.join("\r\n")+"\r\n\r\n";
+      let request = rows.join("\r\n")+"\r\n\r\n" + body;
     //   console.log("request:",request);
       this.socket.write(request);
     }
@@ -144,19 +147,21 @@ hello
 
 
 let xhr = new XMLHttpRequest();
-xhr.open("GET", "http://127.0.0.1:8080/get?id=1&name=2");
+xhr.open("POST", "http://127.0.0.1:8080/post");
 xhr.onReadyStateChange = () => {
-    console.log("onReadyStateChange11111", xhr.readyState)
+    console.log("onReadyStateChange", xhr.readyState)
+
 };
 
 xhr.responseType = "text";
-xhr.setRequestHeader("name", "hi");
-xhr.setRequestHeader("age", 11);
+xhr.setRequestHeader("Content-Type", "application/json"); // 指定请求体类型
 xhr.onload = function () {
-    // console.log("status", xhr.status);
-    // console.log("statusText", xhr.statusText);
-    // console.log("response-header", xhr.getAllResponseHeaders());
-    // console.log("response-body", xhr.response);
+    console.log("status", xhr.status);
+    console.log("statusText", xhr.statusText);
+    console.log("response-header", xhr.getAllResponseHeaders());
+    console.log("response-body", xhr.response);
 }
 
-xhr.send();
+xhr.send(JSON.stringify({
+    name: "hello"
+})); // 发送请求体：json格式的字符串
